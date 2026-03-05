@@ -1,0 +1,15 @@
+node_modules
+.next
+.turbo
+.vercel
+.env
+.env.local
+.env.*
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-lock.yaml
+coverage
+dist
+*.log
+uploads
