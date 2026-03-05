@@ -35,6 +35,15 @@ function getField(fields, key) {
 async function handler(req, res) {
   await connectDB()
 
+  // Helpful for debugging on Vercel
+  // eslint-disable-next-line no-console
+  console.log('[/api/admin/properties] method:', req.method)
+
+  if (req.method === 'OPTIONS' || req.method === 'HEAD') {
+    res.setHeader('Allow', ['GET', 'POST', 'OPTIONS', 'HEAD'])
+    return res.status(200).end()
+  }
+
   if (req.method === 'POST') {
     // Create property
     try {
@@ -104,7 +113,8 @@ async function handler(req, res) {
     return res.json({ properties, total })
   }
 
-  res.status(405).json({ error: 'Method not allowed' })
+  res.setHeader('Allow', ['GET', 'POST'])
+  res.status(405).json({ error: `Method ${req.method} not allowed` })
 }
 
 export default requireAuth(handler)

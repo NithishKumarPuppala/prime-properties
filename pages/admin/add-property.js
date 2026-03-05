@@ -62,14 +62,21 @@ export default function AddProperty() {
         headers: { Authorization: `Bearer ${token}` },
         body: fd,
       })
-      const data = await res.json()
+      const data = await res.json().catch(() => null)
+
+      if (!res.ok || !data) {
+        toast.error(data?.error || 'Failed to add property')
+        return
+      }
+
       if (data.success) {
         toast.success('Property added successfully!')
         router.push('/admin/properties')
       } else {
         toast.error(data.error || 'Failed to add property')
       }
-    } catch {
+    } catch (err) {
+      console.error('Add property error:', err)
       toast.error('Network error')
     } finally {
       setLoading(false)
