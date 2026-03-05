@@ -8,8 +8,18 @@ import cloudinary from '../../../utils/cloudinary'
 
 export const config = { api: { bodyParser: false } }
 
-const uploadDir = path.join(process.cwd(), 'public', 'uploads')
-if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true })
+// Use writable temp dir on Vercel, local /public/uploads in dev
+const uploadDir = process.env.VERCEL
+  ? '/tmp/uploads'
+  : path.join(process.cwd(), 'public', 'uploads')
+
+if (!fs.existsSync(uploadDir)) {
+  try {
+    fs.mkdirSync(uploadDir, { recursive: true })
+  } catch {
+    // ignore if cannot create (Vercel may restrict some paths)
+  }
+}
 
 function parseForm(req) {
   return new Promise((resolve, reject) => {
