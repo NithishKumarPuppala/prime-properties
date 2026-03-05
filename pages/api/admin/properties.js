@@ -4,7 +4,7 @@ import { requireAuth } from '../../../utils/auth'
 import formidable from 'formidable'
 import path from 'path'
 import fs from 'fs'
-import { createReadStream } from 'fs'
+import cloudinary from '../../../utils/cloudinary'
 
 export const config = { api: { bodyParser: false } }
 
@@ -47,8 +47,15 @@ async function handler(req, res) {
 
       for (const file of uploadedFiles) {
         if (file && file.filepath) {
-          const filename = path.basename(file.filepath)
-          images.push({ url: `/uploads/${filename}`, public_id: filename })
+          const result = await cloudinary.uploader.upload(file.filepath, {
+            folder: 'properties',
+          })
+          images.push({
+            url: result.secure_url,
+            public_id: result.public_id,
+          })
+          // best-effort cleanup of temp file
+          fs.unlink(file.filepath, () => {})
         }
       }
 
